@@ -50,7 +50,10 @@ class FavoritesListVC: GFDataLoadingVC {
                 self.updateUI(with: favorites)
             
             case .failure(let error):
-                self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    self.presentGFAlert(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+                }
             }
         }
     }
@@ -93,8 +96,10 @@ extension FavoritesListVC: UITableViewDelegate, UITableViewDataSource {
         PersistenceManager.updateWith(favorite: favorites[indexPath.row], actionType: .remove) { [weak self] error in
             guard let self else { return }
             if let error {
-                self.presentGFAlertOnMainThread(title: "Unable to remove", message: error.rawValue, buttonTitle: "Ok")
-                return
+                DispatchQueue.main.async {
+                    self.presentGFAlert(title: "Unable to remove", message: error.rawValue, buttonTitle: "Ok")
+                    return
+                }
             }
             favorites.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .left)
