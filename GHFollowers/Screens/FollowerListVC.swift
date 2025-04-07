@@ -223,5 +223,6 @@ extension FollowerListVC: UserInfoVCDelegate {
         
         collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
         getFollowers(username: username, page: page)
+        configureSearchController()
     }
 }
