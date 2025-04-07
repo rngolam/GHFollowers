@@ -23,6 +23,18 @@ class FavoritesListVC: GFDataLoadingVC {
         getFavorites()
     }
     
+    override func updateContentUnavailableConfiguration(using state: UIContentUnavailableConfigurationState) {
+        if favorites.isEmpty {
+            var config = UIContentUnavailableConfiguration.empty()
+            config.image = .init(systemName: "star")
+            config.text = "No Favorites"
+            config.secondaryText = "Add a favorite on the follower list screen"
+            contentUnavailableConfiguration = config
+        } else {
+            contentUnavailableConfiguration = nil
+        }
+    }
+    
     func configureViewController() {
         view.backgroundColor = .systemBackground
         title = "Favorites"
@@ -59,14 +71,11 @@ class FavoritesListVC: GFDataLoadingVC {
     }
     
     func updateUI(with favorites: [Follower]) {
-        if favorites.isEmpty {
-            self.showEmptyStateView(with: "No Favorites?\nAdd one on the follower screen.", in: self.view)
-        } else {
-            DispatchQueue.main.async {
-                self.favorites = favorites
-                self.tableView.reloadDataOnMainThread()
-                self.view.bringSubviewToFront(self.tableView)
-            }
+        self.favorites = favorites
+        setNeedsUpdateContentUnavailableConfiguration()
+        DispatchQueue.main.async {
+            self.tableView.reloadDataOnMainThread()
+            self.view.bringSubviewToFront(self.tableView)
         }
     }
 }
@@ -103,9 +112,7 @@ extension FavoritesListVC: UITableViewDelegate, UITableViewDataSource {
             }
             favorites.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .left)
-            if self.favorites.isEmpty {
-                self.showEmptyStateView(with: "No Favorites?\nAdd one on the follower screen.", in: self.view)
-            }
+            setNeedsUpdateContentUnavailableConfiguration()
         }
     }
 }
