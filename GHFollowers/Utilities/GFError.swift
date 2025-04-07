@@ -1,5 +1,5 @@
 //
-//  ErrorMessages.swift
+//  GFError.swift
 //  GHFollowers
 //
 //  Created by Richie Ngo-Lam on 2/23/25.
